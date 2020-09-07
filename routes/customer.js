@@ -5,14 +5,17 @@ const fs = require("fs");
 const http = require("http");
 
 router.route("/:id").post((req, res) => {
-	Customer.findById(req.params.id).then((customer) => {
-		console.log(customer);
-
-		(customer._id == req.body.customerID) &
-		(customer.password == req.body.password)
-			? res.json(customer.workURI)
-			: res.json("wrong credentials");
-	});
+	Customer.findById(req.params.id)
+		.then((customer) => {
+			(customer._id == req.body.customerID) &
+			(customer.password == req.body.password)
+				? res.json({
+						name: customer.clientname,
+						link: customer.workURI,
+				  })
+				: res.json("wrong credentials");
+		})
+		.catch((err) => console.log(err));
 });
 router.route("/").get((req, res) => {
 	const file = fs.createWriteStream("file.zip");
