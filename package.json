@@ -1,0 +1,27 @@
+{
+  "name": "pixelineApi",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start:dev": "nodemon --watch",
+    "start": "nodemon server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  },
+  "dependencies": {
+    "bcrypt-nodejs": "0.0.3",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "generate-password": "^1.5.1",
+    "knex": "^0.21.5",
+    "mongoose": "^5.10.2",
+    "pg": "^8.3.3"
+  },
+  "description": ""
+}
