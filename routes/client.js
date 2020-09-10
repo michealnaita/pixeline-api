@@ -39,8 +39,6 @@ router.route("/upload").post(upload.array("files"), (req, res, next) => {
 			res.json({ clientID: data._id, password: data.password });
 		})
 		.catch((err) => console.log("failed to upload", err));
-
-	console.log(req.files);
 });
 
 router.route("/download").get((req, res) => {
