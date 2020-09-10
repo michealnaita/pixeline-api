@@ -1,13 +1,12 @@
 const express = require("express");
 const cors = require("cors");
-const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
-const customerRouter = require("./routes/customer.js");
+const clientRouter = require("./routes/client.js");
 require("dotenv").config();
 
 //initialising the the app with express
 const app = express();
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 9000;
 
 //MIDDLEWARE
 //to undersatnd convert req.body from json
@@ -26,22 +25,8 @@ connection.once("open", () => {
 	console.log("connected to mongo database");
 });
 
-//fetch work
-app.post("/getwork", (req, res) => {
-	const { customerId, password } = req.body;
-	dataBase.forEach((item) => {
-		if ((customerId === item.customerId) & (password === item.password)) {
-			const message = `hey ${item.name} click here to download work`;
-			res.json(message);
-		}
-	});
-});
-
-app.post("/", (req, res) => {
-	console.log("home");
-});
-//customer route
-app.use("/customers", customerRouter);
+//client route
+app.use("/clients", clientRouter);
 
 //set server to listen for requests
 app.listen(port, () => {
