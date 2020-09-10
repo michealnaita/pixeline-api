@@ -18,6 +18,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 //storage end
+
 router.route("/upload").post(upload.array("files"), (req, res, next) => {
 	const password = generator.generate({
 		length: 6,
@@ -38,7 +39,7 @@ router.route("/upload").post(upload.array("files"), (req, res, next) => {
 		.then((data) => {
 			res.json({ clientID: data._id, password: data.password });
 		})
-		.catch((err) => console.log("failed to upload", err));
+		.catch((err) => res.json({ message: "failed to upload", error: err }));
 });
 
 router.route("/download").get((req, res) => {

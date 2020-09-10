@@ -28,6 +28,11 @@ connection.once("open", () => {
 //client route
 app.use("/clients", clientRouter);
 
+//home route
+app.use("/", (req, res) => {
+	res.json("this is home");
+});
+
 //set server to listen for requests
 app.listen(port, () => {
 	console.log(`server up on ${port}`);
