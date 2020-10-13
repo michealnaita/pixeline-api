@@ -29,7 +29,7 @@ connection.once("open", () => {
 app.use("/clients", clientRouter);
 
 //home route
-app.use("/", (req, res) => {
+app.get("/", (req, res) => {
 	res.json("this is home");
 });
 
