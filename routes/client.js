@@ -11,7 +11,8 @@ const storage = multer.diskStorage({
 		cb(null, storageDir);
 	},
 	filename: (req, file, cb) => {
-		cb(null, Date.now() + path.extname(file.originalname));
+		// cb(null, Date.now() + path.extname(file.originalname));
+		cb(null, file.originalname);
 	},
 });
 
@@ -25,7 +26,7 @@ router.route("/upload").post(upload.array("files"), (req, res, next) => {
 	});
 	const clientname = req.body.clientname;
 	const brandname = req.body.brandname;
-	const filename = req.files[0].filename;
+	const filename = req.files[0].originalname;
 
 	const newClient = new Client({
 		clientname,
@@ -44,20 +45,17 @@ router.route("/upload").post(upload.array("files"), (req, res, next) => {
 router.route("/download").get((req, res) => {
 	const fileName = req.query.filename;
 	const filePath = path.join(storageDir, fileName);
-
 	return res.download(filePath, fileName, (err) => {
 		if (err) {
 			return res.status(404).json({
 				messageType: "Error",
-				message: "file not found",
-				error: err,
+				message: "file not fount",
 			});
 		} else {
 			console.log("file is downloaded");
 		}
 	});
 });
-
 router.route("/:id").post((req, res) => {
 	Client.findById(req.params.id)
 		.then((client) => {
@@ -72,5 +70,4 @@ router.route("/:id").post((req, res) => {
 		})
 		.catch((err) => res.json("invalid"));
 });
-
 module.exports = router;
