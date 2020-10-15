@@ -1,8 +1,16 @@
 const router = require("express").Router();
 const generator = require("generate-password");
-let Client = require("../models/client.model.js");
+const Client = require("../models/client.model.js");
+const File = require("../models/file.model.js");
 const multer = require("multer");
 const path = require("path");
+const { zip } = require("./zip.js");
+const {
+	createPassword,
+	addClient,
+	addFiles,
+	getFullClient,
+} = require("./functions");
 
 //storage
 const storageDir = path.join(__dirname, "..", "storage");
@@ -18,55 +26,80 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 //storage end
 
-router.route("/upload").post(upload.array("files"), (req, res, next) => {
-	const password = generator.generate({
-		length: 6,
-		numbers: true,
-	});
-	const clientname = req.body.clientname;
-	const brandname = req.body.brandname;
-	const filename = req.files[0].filename;
+router.route("/upload").post(upload.array("files"), async (req, res) => {
+	try {
+		const rawFiles = req.files;
+		const { clientname, brandname } = req.body;
+		const filesIndex = [];
+		if (!rawFiles.length || !clientname || !brandname)
+			throw new Error("missing client's name ,brand name or files");
 
-	const newClient = new Client({
-		clientname,
-		brandname,
-		filename,
-		password,
-	});
-	newClient
-		.save()
-		.then((data) => {
-			res.json({ clientID: data._id, password: data.password });
-		})
-		.catch((err) => res.json({ message: "failed to upload", error: err }));
+		const password = createPassword();
+		const files = await addFiles(rawFiles);
+		files.map((file) => {
+			filesIndex.push(file._id);
+		});
+
+		if (!filesIndex.length) throw new Error("files are required");
+
+		const client = await addClient({
+			clientname,
+			brandname,
+			files: filesIndex,
+			password,
+		});
+		res.json(client);
+	} catch (error) {
+		res.json(error.message);
+	}
 });
 
-router.route("/download").get((req, res) => {
-	const fileName = req.query.filename;
-	const filePath = path.join(storageDir, fileName);
-	return res.download(filePath, fileName, (err) => {
-		if (err) {
-			return res.status(404).json({
-				messageType: "Error",
-				message: "file not found",
+router.route("/download/:id").get(async (req, res) => {
+	const result = await File.findById(req.params.id)
+		.then((response) => {
+			return response;
+		})
+		.catch((err) => res.json({ err: err }).status(404));
+	const { filename, originalname, path } = result;
+
+	res.download(path, originalname, (err) => {
+		if (err) return res.status(404).res.json("file not found");
+	});
+});
+
+router.route("/downloadall/:id").get(async (req, res) => {
+	try {
+		const client = await getFullClient(req.params.id);
+		return zip(client, res);
+	} catch (error) {
+		res.status(404).json(error.message);
+	}
+});
+
+router.route("/:id").post(async (req, res) => {
+	try {
+		const id = req.params.id;
+		const password = req.body.password;
+		const client = await Client.findById(id)
+			.then((result) => result)
+			.catch((err) => {
+				if (err) throw new Error("client not found");
 			});
-		} else {
-			console.log("file is downloaded");
-		}
-	});
+
+		if (client.password !== password)
+			throw new Error("incorrect password or client id");
+
+		const processedClient = await getFullClient(id);
+		const { _id, clientname, files } = processedClient;
+		res.json({
+			message: "success",
+			_id,
+			clientname,
+			files,
+		});
+	} catch (error) {
+		res.status(404).json(error.message);
+	}
 });
-router.route("/:id").post((req, res) => {
-	Client.findById(req.params.id)
-		.then((client) => {
-			if (
-				(client._id == req.body.clientID) &
-				(client.password == req.body.password)
-			) {
-				res.json(client.filename);
-			} else {
-				res.json("invalid");
-			}
-		})
-		.catch((err) => res.json("invalid"));
-});
+
 module.exports = router;

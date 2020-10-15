@@ -6,7 +6,7 @@ require("dotenv").config();
 
 //initialising the the app with express
 const app = express();
-const port = process.env.PORT || 9000;
+const port = process.env.PORT || 7000;
 
 //MIDDLEWARE
 //to undersatnd convert req.body from json
@@ -15,11 +15,15 @@ app.use(cors());
 
 //initialise mongodb
 uri = process.env.ATLAS_URI;
-mongoose.connect(uri, {
-	useNewUrlParser: true,
-	useCreateIndex: true,
-	useUnifiedTopology: true,
-});
+mongoose
+	.connect(uri, {
+		useNewUrlParser: true,
+		useCreateIndex: true,
+		useUnifiedTopology: true,
+	})
+	.catch((err) =>
+		console.log("failed to reach mongodb Atlas check your network")
+	);
 const connection = mongoose.connection;
 connection.once("open", () => {
 	console.log("connected to mongo database");
