@@ -4,7 +4,7 @@
   "main": "app.js",
   "scripts": {
     "start:dev": "nodemon --watch server.js",
-    "start": "nodemon server.js"
+    "start": "node server.js"
   },
   "author": "",
   "license": "ISC",
