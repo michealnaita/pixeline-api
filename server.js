@@ -22,7 +22,7 @@ mongoose
 		useUnifiedTopology: true,
 	})
 	.catch((err) =>
-		console.log("failed to reach mongodb Atlas check your network")
+		console.log("failed to reach mongodb Atlas connection timed out")
 	);
 const connection = mongoose.connection;
 connection.once("open", () => {

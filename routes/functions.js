@@ -34,7 +34,7 @@ const getFullClient = async (id) => {
 	const client = await Client.findById(id)
 		.then((result) => result)
 		.catch((err) => {
-			if (err) throw new Error("client not found 2");
+			if (err) throw new Error("client not found");
 		});
 
 	const { files } = client;

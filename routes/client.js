@@ -55,16 +55,25 @@ router.route("/upload").post(upload.array("files"), async (req, res) => {
 });
 
 router.route("/download/:id").get(async (req, res) => {
-	const result = await File.findById(req.params.id)
-		.then((response) => {
-			return response;
-		})
-		.catch((err) => res.json({ err: err }).status(404));
-	const { filename, originalname, path } = result;
+	try {
+		const result = await File.findById(req.params.id)
+			.then((response) => {
+				return response;
+			})
+			.catch((err) => {
+				if (err) throw new Error("this file is not available");
+			});
+		const { filename, originalname, path } = result;
 
-	res.download(path, originalname, (err) => {
-		if (err) return res.status(404).res.json("file not found");
-	});
+		res.download(path, originalname, (err) => {
+			if (err) return res.status(404).json("failed to download file");
+		});
+	} catch (error) {
+		res.send(
+			`Could not download file try again later or contact support support@pixeline.com,
+			possible cause:${error.message}`
+		);
+	}
 });
 
 router.route("/downloadall/:id").get(async (req, res) => {
@@ -72,7 +81,10 @@ router.route("/downloadall/:id").get(async (req, res) => {
 		const client = await getFullClient(req.params.id);
 		return zip(client, res);
 	} catch (error) {
-		res.status(404).json(error.message);
+		res.send(
+			`Could not download all try again later or contact support support@pixeline.com,
+			possible cause:${error.message}`
+		);
 	}
 });
 
@@ -98,7 +110,7 @@ router.route("/:id").post(async (req, res) => {
 			files,
 		});
 	} catch (error) {
-		res.status(404).json(error.message);
+		res.json(error.message);
 	}
 });
 
