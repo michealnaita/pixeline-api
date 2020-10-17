@@ -69,10 +69,10 @@ router.route("/download/:id").get(async (req, res) => {
 			if (err) return res.status(404).json("failed to download file");
 		});
 	} catch (error) {
-		res.send(
-			`Could not download file try again later or contact support support@pixeline.com,
-			possible cause:${error.message}`
-		);
+		res.render("index", {
+			message: "Failed to download file, contact support",
+			cause: error.message,
+		});
 	}
 });
 
@@ -81,10 +81,10 @@ router.route("/downloadall/:id").get(async (req, res) => {
 		const client = await getFullClient(req.params.id);
 		return zip(client, res);
 	} catch (error) {
-		res.send(
-			`Could not download all try again later or contact support support@pixeline.com,
-			possible cause:${error.message}`
-		);
+		res.render("index", {
+			message: `Failed to download files, contact support`,
+			cause: error.message,
+		});
 	}
 });
 

@@ -12,6 +12,7 @@ const port = process.env.PORT || 7000;
 //to undersatnd convert req.body from json
 app.use(express.json());
 app.use(cors());
+app.set("view engine", "ejs");
 
 //initialise mongodb
 uri = process.env.ATLAS_URI;
