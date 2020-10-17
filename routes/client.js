@@ -69,7 +69,7 @@ router.route("/download/:id").get(async (req, res) => {
 			if (err) return res.status(404).json("failed to download file");
 		});
 	} catch (error) {
-		res.render("index", {
+		res.render("error", {
 			message: "Failed to download file, contact support",
 			cause: error.message,
 		});
@@ -81,7 +81,7 @@ router.route("/downloadall/:id").get(async (req, res) => {
 		const client = await getFullClient(req.params.id);
 		return zip(client, res);
 	} catch (error) {
-		res.render("index", {
+		res.render("error", {
 			message: `Failed to download files, contact support`,
 			cause: error.message,
 		});

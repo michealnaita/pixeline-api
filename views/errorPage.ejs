@@ -4,14 +4,15 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=	, initial-scale=1.0" />
 		<link rel="stylesheet" href="style.css">
-		<title>Pixelinegroup</title>
+		<title>Error | Pixelinegroup</title>
 	</head>
 	<body>
 		<div class="content-wrapper">
 			<header>
-				<img src="https://pixelinegroup.com/images/svg/group_logo.svg" alt="logo" />
+				<img src="https://pixelinegroup.com/files/web_vector/group_logo.svg" alt="logo" />
 				<div>
-					This is <span style="font-weight: 500">Pixeline</span>
+					<span style="font-weight: 500; font-size:48px"><%= err.status%></span><br/>
+					<p><%= err.message%></p>
 				</div>
 			</header>
 	</body>

@@ -1,6 +1,9 @@
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
+const path = require("path");
+const favicon = require("serve-favicon");
+const createError = require("http-errors");
 const clientRouter = require("./routes/client.js");
 require("dotenv").config();
 
@@ -9,10 +12,11 @@ const app = express();
 const port = process.env.PORT || 7000;
 
 //MIDDLEWARE
-//to undersatnd convert req.body from json
 app.use(express.json());
 app.use(cors());
 app.set("view engine", "ejs");
+app.use(express.static(path.join(__dirname, "public")));
+app.use(favicon(path.join(__dirname, "public", "favicon.ico")));
 
 //initialise mongodb
 uri = process.env.ATLAS_URI;
@@ -30,12 +34,20 @@ connection.once("open", () => {
 	console.log("connected to mongo database");
 });
 
-//client route
+// ROUTES
 app.use("/clients", clientRouter);
 
-//home route
-app.use("/", (req, res) => {
-	res.json("this is home");
+app.get("/", (req, res) => {
+	res.render("index");
+});
+
+app.use((req, res, next) => {
+	next(new createError.NotFound());
+});
+
+app.use((err, req, res, next) => {
+	res.status(err.status || 500);
+	res.render("errorPage", { err });
 });
 
 //set server to listen for requests

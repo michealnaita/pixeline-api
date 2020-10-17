@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=	, initial-scale=1.0" />
+		<style>
+		@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700&display=swap");
+
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	font-family: "Montserrat", sans-serif;
+}
+
+.content-wrapper {
+	height: 100vh;
+	padding: 15%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+}
+header {
+	text-align: center;
+	padding-bottom: 20px;
+	border-bottom: 5px solid black;
+	margin-bottom: 50px;
+}
+header div {
+	font-weight: 300;
+	font-size: 32px;
+}
+header img {
+	padding: 50px 0;
+}
+.error {
+	padding: 20px 0;
+}
+.error p {
+	font-size: 20px;
+	padding: 5px 0;
+}
+a {
+	padding: 20px 0;
+	font-size: 16px;
+}
+.bold {
+	font-weight: 700px !important;
+}
+
+		</style>
+		<title>Pixelinegroup</title>
+	</head>
+	<body>
+		<div class="content-wrapper">
+			<header>
+				<img src="https://pixelinegroup.com/images/svg/group_logo.svg" alt="logo" />
+				<div>
+					This is <span style="font-weight: 500">Pixeline</span>
+				</div>
+			</header>
+			<div class="error">
+				<p>
+					<span style="font-weight: 700"> Error message:</span> 
+					<%= message%>
+				</p>
+				<p>
+					<span style="font-weight: 700">Error cause:</span>
+					<%= cause%>
+				</p>
+			</div>
+			<a href="mailto:support@pixelinegroup.com">
+							support@pixelinegroup.com
+						</a>
+		</div>
+	</body>
+</html>
