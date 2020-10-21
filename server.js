@@ -5,6 +5,7 @@ const path = require("path");
 const favicon = require("serve-favicon");
 const createError = require("http-errors");
 const clientRouter = require("./routes/client.js");
+const adminRouter = require("./routes/admin.js");
 require("dotenv").config();
 
 //initialising the the app with express
@@ -36,6 +37,7 @@ connection.once("open", () => {
 
 // ROUTES
 app.use("/clients", clientRouter);
+app.use("/admin", adminRouter);
 
 app.get("/", (req, res) => {
 	res.render("index");

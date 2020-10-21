@@ -2,6 +2,8 @@ const generator = require("generate-password");
 const Client = require("../models/client.model.js");
 const File = require("../models/file.model.js");
 const mongoose = require("mongoose");
+const createError = require("http-errors");
+const fs = require("fs");
 
 const addFiles = async (files) => {
 	const prossedFiles = await File.insertMany(toArray(files))
@@ -49,6 +51,25 @@ const getFullClient = async (id) => {
 	return fullClient;
 };
 
+const deleteFile = (fileId, next) => {
+	File.findById(fileId)
+		.then((response) => {
+			try {
+				fs.unlinkSync(response.path);
+				File.findByIdAndDelete(response.id, function (err) {
+					if (err) {
+						return next(createError(404, "File not found"));
+					}
+				});
+			} catch (error) {
+				return next(createError(404, "File path not found"));
+			}
+		})
+		.catch((err) => {
+			return next(createError(404, "File not found"));
+		});
+};
+
 const toArray = (array) => {
 	let files = [];
 	array.map((file) => {
@@ -74,4 +95,5 @@ module.exports = {
 	addClient,
 	addFiles,
 	getFullClient,
+	deleteFile,
 };

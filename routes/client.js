@@ -5,11 +5,13 @@ const File = require("../models/file.model.js");
 const multer = require("multer");
 const path = require("path");
 const { zip } = require("./zip.js");
+const createError = require("http-errors");
 const {
 	createPassword,
 	addClient,
 	addFiles,
 	getFullClient,
+	deleteFile,
 } = require("./functions");
 
 //storage
@@ -26,47 +28,32 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 //storage end
 
-router.route("/upload").post(upload.array("files"), async (req, res) => {
-	try {
-		const rawFiles = req.files;
-		const { clientname, brandname } = req.body;
-		const filesIndex = [];
-		if (!rawFiles.length || !clientname || !brandname)
-			throw new Error("missing client's name ,brand name or files");
-
-		const password = createPassword();
-		const files = await addFiles(rawFiles);
-		files.map((file) => {
-			filesIndex.push(file._id);
-		});
-
-		if (!filesIndex.length) throw new Error("files are required");
-
-		const client = await addClient({
-			clientname,
-			brandname,
-			files: filesIndex,
-			password,
-		});
-		res.json(client);
-	} catch (error) {
-		res.json(error.message);
-	}
+router.route("/test").get(async (req, res) => {
+	const newClient = new Client({
+		clientname: "micheal",
+		brandname: "matteol",
+		password: "ruir438fg",
+		files: ["42515", "42391568"],
+	});
+	const client = await newClient
+		.save()
+		.then((res) => res)
+		.catch((err) => console.log(err));
 });
 
-router.route("/download/:id").get(async (req, res) => {
+router.route("/download/:id").get(async (req, res, next) => {
 	try {
 		const result = await File.findById(req.params.id)
 			.then((response) => {
 				return response;
 			})
 			.catch((err) => {
-				if (err) throw new Error("this file is not available");
+				if (err) next(createError(404, "File not found"));
 			});
 		const { filename, originalname, path } = result;
 
 		res.download(path, originalname, (err) => {
-			if (err) return res.status(404).json("failed to download file");
+			if (err) return next(createError(404, "File path not found"));
 		});
 	} catch (error) {
 		res.render("error", {
@@ -88,7 +75,7 @@ router.route("/downloadall/:id").get(async (req, res) => {
 	}
 });
 
-router.route("/:id").post(async (req, res) => {
+router.route("/signin/:id").post(async (req, res) => {
 	try {
 		const id = req.params.id;
 		const password = req.body.password;
